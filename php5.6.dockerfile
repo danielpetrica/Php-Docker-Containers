@@ -1,4 +1,4 @@
-FROM php:7.4-apache
+FROM php:5.6-apache
 LABEL maintainer="Andrei Daniel Petrica"
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -7,8 +7,7 @@ ENV TZ=UTC
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-RUN apt-get update && apt-get install --reinstall python  python3.9-minimal -y && \
-    apt-get install -y supervisor git curl > /dev/null
+RUN apt-get update && apt-get install -y supervisor git curl cron > /dev/null
 
 # Tool for php extensions instalation
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
@@ -27,7 +26,7 @@ RUN mkdir -p /var/log/supervisor
 # Add user for laravel application
 # Aggiunto questo codice per permetere di entrare nella machina e modificare file come www-data e
 #  non aver problemi di permessi poi sui file se modificati al contrario di quando si entra con root
-RUN #useradd -G www-data,root -u 1000 -d /home/phuser phuser \
+#RUN useradd -G www-data,root -u 1000 -d /home/phuser phuser \
 #	&& mkdir -p /home/phuser/.composer \
 #	&& chown -R phuser:www-data /home/phuser \
 #	&& chown -R phuser:www-data /var/www/html \
@@ -38,7 +37,7 @@ RUN chown -R root:root /var/log/supervisor
 # 	&& chown -R www-data:www-data /home/www-data
 
 # Get latest Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer:1.10 /usr/bin/composer /usr/bin/composer
 COPY --chown=root:root  docker_conf/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY docker_conf/php.ini /etc/php/7.4/cli/conf.d/99-sail.ini
 

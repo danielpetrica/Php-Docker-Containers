@@ -38,6 +38,7 @@ RUN chown -R root:root /var/log/supervisor
 
 # Get latest Composer
 COPY --from=composer:1.10 /usr/bin/composer /usr/bin/composer
+ENV COMPOSER_MEMORY_LIMIT=-1
 COPY --chown=root:root  docker_conf/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY docker_conf/php.ini /etc/php/7.4/cli/conf.d/99-sail.ini
 
